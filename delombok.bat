@@ -1,14 +1,20 @@
-@echo on
+cls
+@echo off
 
-set lib_path=J:\Programmations\java\librairies
-set m2_path=C:\Users\seyro\.m2\repository
+set lib_path=librairies
+set lombok_path=%lib_path%\Lombok\lombok-1.18.26.jar
 
-set modules_path=%lib_path%\archives\Lombok\lombok-1.18.26.jar;%m2_path%\org\eclipse\jgit\org.eclipse.jgit\6.4.0.202211300538-r\org.eclipse.jgit-6.4.0.202211300538-r.jar;%m2_path%\com\googlecode\javaewah\JavaEWAH\1.1.13\JavaEWAH-1.1.13.jar;%m2_path%\org\slf4j-api\2.0.6\slf4j-api-2.0.6.jar;%m2_path%\org\slf4j\slf4j-simple\2.0.6\slf4j-simple-2.0.6.jar
-set source_path="src"
+set modules_path="%lombok_path%;%lib_path%\jgit\org.eclipse.jgit-6.4.0.202211300538-r.jar;%lib_path%\JavaEWAH\JavaEWAH-1.1.13.jar;%lib_path%\slf4j\slf4j-api-2.0.6.jar;%lib_path%\slf4j\slf4j-simple-2.0.6.jar"
+
+set sources_path="src"
+set main_class="src\fr\onsea\aeisonlauncher\AeisonLauncher.java"
+set module_info="src\module-info.java"
 set destination_path="target\generated-sources\delomboked"
 
-set java_path=C:\Program Files\Java\jdk-19\
-set java_exe="%java_path%\bin\java.exe"
-set delombok=-jar "%lib_path%\archives\Lombok\lombok-1.18.26.jar" delombok
+set java_exe="C:\Program Files\Java\jdk-19\bin\java.exe"
+set delombok=-jar "%lombok_path%" delombok
 
-%java_exe% -Dfile.encoding=UTF-8 --add-modules jdk.incubator.vector %delombok% %source_path% -e UTF-8 -n -d %destination_path% --module-path "%modules_path%"
+cls
+@echo on
+
+%java_exe% -Dfile.encoding=UTF-8 %delombok% %sources_path% -e UTF-8 -n -d %destination_path% --module-path %modules_path% --sourcepath %sources_path%
