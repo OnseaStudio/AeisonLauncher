@@ -20,4 +20,4 @@ rem -implicit:class
 rem %print%
 rem %processor%
 
-%javac_exe% %module_info% %main_class% -encoding UTF-8 -d %destination_path% --module-path %modules_path% -classpath %classes_path% -sourcepath %sources_path%
+%javac_exe% %module_info% %main_class% -encoding UTF-8 -d %destination_path% --module-path %modules_path% -sourcepath %sources_path%
