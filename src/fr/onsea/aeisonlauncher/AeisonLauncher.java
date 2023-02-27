@@ -32,6 +32,7 @@ import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -50,23 +51,43 @@ import lombok.AllArgsConstructor;
  */
 public class AeisonLauncher
 {
+	private final static int	MAJOR	= 1;
+	private final static int	MINOR	= 0;
+	private final static String	VERSION	= AeisonLauncher.MAJOR + "." + AeisonLauncher.MINOR;
+
 	public final static void main(final String[] argsIn)
 	{
+		System.out.println("AeisonLauncher version " + AeisonLauncher.VERSION);
+
+		final List<String> translatedArguments = new ArrayList<>();
+		for (final String arg : argsIn)
+		{
+			final var splitted = arg.split(" ");
+			if (splitted != null && splitted.length > 0)
+			{
+				Collections.addAll(translatedArguments, splitted);
+			}
+			else
+			{
+				translatedArguments.add(arg);
+			}
+		}
+
 		final List<String>	arguments		= new ArrayList<>();
 
-		var					settingFilePath	= "settings\\aeison";
+		var					settingFilePath	= "settings\\aeisonlauncher";
 		var					i				= 0;
-		while (i < argsIn.length)
+		while (i < translatedArguments.size())
 		{
-			var arg = argsIn[i];
+			var arg = translatedArguments.get(i);
 			System.out.println("Receveid arg : " + arg);
 			if (arg.contentEquals("--settings-filepath"))
 			{
 				i++;
-				if (i < argsIn.length)
+				if (i < translatedArguments.size())
 				{
-					arg = argsIn[i];
-					System.out.println("Receveid arg : " + arg);
+					arg = translatedArguments.get(i);
+					System.out.println("Receveid settings filepath arg : " + arg);
 					settingFilePath = arg;
 				}
 			}
@@ -78,6 +99,7 @@ public class AeisonLauncher
 			i++;
 		}
 
+		System.out.println(settingFilePath);
 		AeisonLauncher.launch(arguments, settingFilePath);
 	}
 
@@ -350,35 +372,43 @@ public class AeisonLauncher
 						"Loading of modules path and extraction into \"" + settingsLoader.groupingFolder() + "\"");
 				settingsLoader.modulesPath().value("");
 				{
-					final var excludedLibrairies = settingsLoader.excludedLibrairiesForExtraction().value().split(";");
+					final var	excludedLibrairies			= settingsLoader.excludedLibrairiesForExtraction().value();
+					final var	excludedLibsFilesSetting	= settingsLoader.settings().get("EXCLUDED_LIBS_FILES");
+					final var	excludedLibsFiles			= excludedLibsFilesSetting != null
+							&& excludedLibsFilesSetting.value() != null ? excludedLibsFilesSetting.value() : "";
+
 					FileUtils.recurse(new File(settingsLoader.libPath().value()), fileIn -> {
-						if (fileIn.getAbsolutePath().endsWith(".jar"))
+						if (fileIn.getAbsolutePath().endsWith(".jar")
+								&& (settingsLoader.classesPath() == null || settingsLoader.classesPath().value() == null
+										|| !settingsLoader.classesPath().value().contains(fileIn.getName()))
+								|| fileIn.getName().contains("lombok"))
 						{
 							settingsLoader.modulesPath()
 									.value(settingsLoader.modulesPath().value() + fileIn.getAbsolutePath() + ";");
-
 							var excluded = false;
-							for (final var excludedLibrary : excludedLibrairies)
-							{
-								if (fileIn.getAbsolutePath().contains(excludedLibrary))
-								{
-									System.out.println(fileIn.getAbsolutePath() + " is excluded by " + excludedLibrary);
 
-									excluded = true;
-									break;
-								}
+							if (excludedLibrairies.contains(fileIn.getName()))
+							{
+								System.out.println(fileIn.getAbsolutePath() + " is excluded by " + excludedLibrairies);
+
+								excluded = true;
+							}
+							if (excludedLibsFiles.contains(fileIn.getName()))
+							{
+								System.out.println(fileIn.getAbsolutePath() + " is excluded by " + excludedLibsFiles);
+
+								excluded = true;
 							}
 
 							if (!excluded)
 							{
 								System.out.println("Extracting of jar : " + fileIn.getAbsolutePath());
 
-								FileUtils.extractJar(fileIn, settingsLoader.groupingFolder().value());
+								FileUtils.extractJarExcluded(fileIn, settingsLoader.groupingFolder().value(),
+										excludedLibsFiles);
 							}
 						}
-					}
-
-					);
+					});
 
 					if (settingsLoader.modulesPath().value().endsWith(";"))
 					{
@@ -388,6 +418,7 @@ public class AeisonLauncher
 
 					settingsLoader.modulesPath().value("\"" + settingsLoader.modulesPath().value() + "\"");
 				}
+
 				// Generate javac command
 
 				System.out.println("Javac command generation : ");
@@ -580,7 +611,7 @@ public class AeisonLauncher
 						final var nextProcessArgs = settingsLoader.settings().get("NEXT_PROCESS_ARGS");
 						if (nextProcessArgs != null && nextProcessArgs.value() != null)
 						{
-							final var splittedArgs = nextProcessArgs.value().replace("\"", "").split(" ");
+							final var splittedArgs = nextProcessArgs.value().replace("\"", "").split(";");
 							if (splittedArgs != null && splitted.length > 0)
 							{
 								var i0 = 0;
@@ -604,12 +635,12 @@ public class AeisonLauncher
 						}
 
 						System.out.println("cmd /C start \"" + title + "\" \"" + settingsLoader.javaBinPath().value()
-								+ "\\java.exe\" -classpath " + launchFile.getAbsolutePath() + " "
+								+ "\\java.exe\" -jar " + launchFile.getAbsolutePath() + " "
 								+ settingsLoader.mainClass().value() + (args == "" ? "" : " " + args));
 
-						new Thread(new Launcher(settingsLoader.javaBinPath().value(), launchFile, workPath, errorsFile,
+						new Launcher(settingsLoader.javaBinPath().value(), launchFile, workPath, errorsFile,
 								outputsFile, inputsFile, settingsLoader.mainClass().value(), title,
-								args == "" ? null : args)).start();
+								args == "" ? null : args).run();
 						System.exit(0);
 					}
 					else
@@ -648,16 +679,17 @@ public class AeisonLauncher
 				{
 					new ProcessBuilder("cmd", "/C", "start", "\"" + this.title + "\"",
 							"\"" + this.javaBinPath + "\\java.exe\"", "-jar", this.launchFile.getAbsolutePath(),
-							this.main, this.args).inheritIO().directory(new File(this.workPath))
-							.redirectErrorStream(true).redirectError(this.errorsFile).redirectOutput(this.outputsFile)
+							this.main, this.args).inheritIO()
+							.directory(new File(new File(this.workPath).getAbsolutePath())).redirectErrorStream(true)
+							.redirectError(this.errorsFile).redirectOutput(this.outputsFile)
 							.redirectInput(this.inputsFile).start();
 				}
 				else
 				{
 					new ProcessBuilder("cmd", "/C", "start", "\"" + this.title + "\"",
 							"\"" + this.javaBinPath + "\\java.exe\"", "-jar", this.launchFile.getAbsolutePath(),
-							this.main).inheritIO().directory(new File(this.workPath)).redirectErrorStream(true)
-							.redirectError(this.errorsFile).redirectOutput(this.outputsFile)
+							this.main).inheritIO().directory(new File(new File(this.workPath).getAbsolutePath()))
+							.redirectErrorStream(true).redirectError(this.errorsFile).redirectOutput(this.outputsFile)
 							.redirectInput(this.inputsFile).start();
 				}
 			}
@@ -672,7 +704,6 @@ public class AeisonLauncher
 			final File sourceInputsFileIn) throws Exception
 	{
 		FileUtils.createNewFile(sourceInputsFileIn);
-		System.out.println(sourceInputsFileIn.exists());
 
 		final var writer = new BufferedWriter(new FileWriter(sourceInputsFileIn));
 
@@ -685,5 +716,4 @@ public class AeisonLauncher
 
 		writer.close();
 	}
-
 }

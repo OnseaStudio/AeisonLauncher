@@ -21,7 +21,7 @@
 *	Neither the name "Onsiea", "Onsiea Engine", or any derivative name or the names of its authors / contributors may be used to endorse or promote products derived from this software and even less to name another project or other work without clear and precise permissions written in advance.
 *
 *	(more details on https://github.com/Onsiea/OnsieaEngine/wiki/License)
-*	
+*
 *	@author Seynax
 */
 /**

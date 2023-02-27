@@ -422,6 +422,87 @@ public class FileUtils
 		}
 	}
 
+	/**
+	 *
+	 * @param fileIn
+	 * @param valueIn
+	 * @param excludedIn all excluded files separate by ;
+	 */
+	public static void extractJarExcluded(final File fileIn, final String destinationPathIn, final String excludedIn)
+	{
+		var dir = destinationPathIn + "\\";
+		if (dir.endsWith(".jar"))
+		{
+			dir = dir.substring(0, dir.length() - 4);
+		}
+
+		JarInputStream jar = null;
+		try
+		{
+			jar = new JarInputStream(new FileInputStream(fileIn));
+			JarEntry jarEntry = null;
+			while ((jarEntry = jar.getNextJarEntry()) != null)
+			{
+				final var	splitted	= jarEntry.getName().split(FileUtils.ZIP_FILE_PATH_SEPARATOR);
+				final var	name		= splitted != null && splitted.length > 0 ? splitted[splitted.length - 1]
+						: jarEntry.getName();
+
+				if (excludedIn.contains(name))
+				{
+					continue;
+				}
+
+				final var	jarEntryName	= jarEntry.getName();
+				final var	entry			= new File(dir, jarEntryName);
+
+				if (jarEntryName.endsWith(FileUtils.ZIP_FILE_PATH_SEPARATOR))
+				{
+					entry.mkdirs();
+				}
+				else
+				{
+					if (!entry.getParentFile().exists())
+					{
+						entry.getParentFile().mkdirs();
+					}
+
+					entry.createNewFile();
+
+					final var	out			= new FileOutputStream(entry);
+					final var	buffer		= new byte[1024];
+					var			readCount	= 0;
+
+					while ((readCount = jar.read(buffer)) >= 0)
+					{
+						out.write(buffer, 0, readCount);
+					}
+
+					jar.closeEntry();
+					out.flush();
+					out.close();
+				}
+			}
+		}
+		catch (final IOException e)
+		{
+			e.printStackTrace();
+		}
+		finally
+		{
+			if (jar != null)
+			{
+				try
+				{
+					jar.close();
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
 	public final static void extractJar(final File fileIn, final String destinationPathIn)
 	{
 		var dir = destinationPathIn + "\\";
