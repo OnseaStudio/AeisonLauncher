@@ -45,13 +45,21 @@ public abstract class Settings
 	private final StringSettingChannel		strings;
 	private final EnabledsSettingChannel	enableds;
 
-	public Settings(final String filePathIn, final ArgumentsLoader argumentsLoaderIn) throws Exception
+	public Settings(final String filePathIn, final boolean isInternalIn, final ArgumentsLoader argumentsLoaderIn)
+			throws Exception
 	{
 		this.filePath	= filePathIn;
 		this.others		= new SettingChannel<>();
 		this.strings	= new StringSettingChannel();
 		this.enableds	= new EnabledsSettingChannel();
-		SettingsUtils.load(filePathIn, this);
+		if (isInternalIn)
+		{
+			SettingsUtils.loadInternal(filePathIn, this);
+		}
+		else
+		{
+			SettingsUtils.load(filePathIn, this);
+		}
 		this.compileArguments(argumentsLoaderIn);
 		this.reload();
 	}
@@ -60,13 +68,20 @@ public abstract class Settings
 	 * @param filePathIn
 	 * @throws Exception
 	 */
-	public Settings(final String filePathIn) throws Exception
+	public Settings(final String filePathIn, final boolean isInternalIn) throws Exception
 	{
 		this.filePath	= filePathIn;
 		this.others		= new SettingChannel<>();
 		this.strings	= new StringSettingChannel();
 		this.enableds	= new EnabledsSettingChannel();
-		SettingsUtils.load(filePathIn, this);
+		if (isInternalIn)
+		{
+			SettingsUtils.loadInternal(filePathIn, this);
+		}
+		else
+		{
+			SettingsUtils.load(filePathIn, this);
+		}
 		this.reload();
 	}
 

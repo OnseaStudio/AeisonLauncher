@@ -43,6 +43,19 @@ public class SettingsUtils
 	final static Scanner		SCANNER		= new Scanner(System.in);
 	public final static Pattern	KEY_PATTERN	= Pattern.compile("<[^=^<^>]*>");
 
+	public final static void loadInternal(final String filePathIn, final Settings settingsIn) throws Exception
+	{
+		FileUtils.linesFunctionOfInternalFile(filePathIn, line -> {
+			final var pair = SettingsUtils.separateAndCompile(line, settingsIn);
+
+			if (pair != null)
+			{
+				final var key = StringUtils.removeUnusedBlank(pair.s1());
+				settingsIn.strings().add(key, pair.s2());
+			}
+		});
+	}
+
 	public final static void load(final String filePathIn, final Settings settingsIn) throws Exception
 	{
 		FileUtils.linesFunction(filePathIn, line -> {

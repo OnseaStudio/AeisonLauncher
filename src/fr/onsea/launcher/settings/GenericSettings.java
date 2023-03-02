@@ -70,14 +70,15 @@ public class GenericSettings extends Settings
 	private StringSetting			jarOutputPath;
 	private StringSetting			excludedLibrairiesForExtraction;	// separate by ;
 
-	public GenericSettings(final String filePathIn, final ArgumentsLoader argumentsLoaderIn) throws Exception
+	public GenericSettings(final String filePathIn, final boolean isInternalIn, final ArgumentsLoader argumentsLoaderIn)
+			throws Exception
 	{
-		super(filePathIn, argumentsLoaderIn);
+		super(filePathIn, isInternalIn, argumentsLoaderIn);
 	}
 
-	public GenericSettings(final String filePathIn) throws Exception
+	public GenericSettings(final String filePathIn, final boolean isInternalIn) throws Exception
 	{
-		super(filePathIn);
+		super(filePathIn, isInternalIn);
 	}
 
 	@Override

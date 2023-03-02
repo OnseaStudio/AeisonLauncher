@@ -124,7 +124,7 @@ public class Launcher implements ILauncher
 
 			System.out.println("Settings loading.");
 			System.out.println("Settings file path : " + settingsFilePath);
-			final var settings = new GenericSettings(settingsFilePath);
+			final var settings = new GenericSettings(settingsFilePath, true);
 
 			filesManager.addFileDeletionAllowedWithConfirmation(settings.localPath().value());
 
@@ -165,7 +165,7 @@ public class Launcher implements ILauncher
 
 		System.out.println("Settings loading.");
 		System.out.println("Settings file path : " + settingsFilePath);
-		final var settings = new GenericSettings(settingsFilePath, argumentsLoader);
+		final var settings = new GenericSettings(settingsFilePath, true, argumentsLoader);
 
 		Launcher.start(new Launcher(settings, filesManager), argsIn);
 	}
@@ -421,7 +421,7 @@ public class Launcher implements ILauncher
 		{
 			System.out.println("Writing of all .java sources files into \"" + sourceInputsPath + "\"");
 
-			this.FILES_MANAGER.writeFilesList(this.SETTINGS.relativeSourcesFolder().value(), sourceInputsPath);
+			this.FILES_MANAGER.writeFilesList(this.SETTINGS.sourcesFolder().value(), sourceInputsPath);
 		}
 
 		// Define all sources inputs with * character on linux, with source inputs file on windows
@@ -489,13 +489,40 @@ public class Launcher implements ILauncher
 			this.SETTINGS.modulesPath().value("\"" + this.SETTINGS.modulesPath().value() + "\"");
 		}
 
+		final var copiesIntoJar = this.SETTINGS.strings().toString("COPIES_INTO_JAR");
+
+		if (copiesIntoJar != null)
+		{
+			System.out.println("Copy specified files \"" + copiesIntoJar + "\" into "
+					+ this.SETTINGS.groupingFolder().quotedValue() + "grouped folder.");
+
+			final var splitted = copiesIntoJar.split(";");
+
+			if (splitted != null && splitted.length > 0)
+			{
+				for (final var split : splitted)
+				{
+					System.out.println("Copy \"" + split + "\" into " + this.SETTINGS.groupingFolder().quotedValue()
+							+ " grouped folder.");
+					this.FILES_MANAGER.copy(split, this.SETTINGS.groupingFolder().value());
+				}
+			}
+			else
+			{
+				System.out.println("Copy \"" + copiesIntoJar + "\" into " + this.SETTINGS.groupingFolder().quotedValue()
+						+ "grouped folder.");
+				this.FILES_MANAGER.copy(copiesIntoJar, this.SETTINGS.groupingFolder().value());
+			}
+		}
+
 		// Generate javac command
 
 		System.out.println("Javac command generation : ");
 		final var javacCommand = new JarBuilder(sourceInputs, this.SETTINGS.javaBinPath().value())
 				.additions("-verbose -g -encoding UTF-8").implicitNone().modules("jdk.incubator.vector")
-				.modulesPath(this.SETTINGS.modulesPath().value()).classesPath(this.SETTINGS.classesPath().value())
-				.sourcesPath(this.SETTINGS.sourcesPath().value())
+				.modulesPath(this.SETTINGS.modulesPath().quotedValue())
+				.classesPath(this.SETTINGS.classesPath().quotedValue())
+				.sourcesPath(this.SETTINGS.sourcesPath().quotedValue())
 				.outputPath(new File(this.SETTINGS.compilationFolder().value()).getAbsolutePath()).buildJavacCommand();
 		System.out.println(javacCommand);
 

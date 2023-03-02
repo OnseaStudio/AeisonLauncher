@@ -36,6 +36,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,6 +48,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
+import fr.onsea.aeisonlauncher.AeisonLauncher;
 import fr.onsea.launcher.utils.IFunction;
 
 /**
@@ -56,6 +59,48 @@ import fr.onsea.launcher.utils.IFunction;
 public class FileUtils
 {
 	private final static String ZIP_FILE_PATH_SEPARATOR = "/";
+
+	public static InputStream internalFile(final String filePathIn)
+	{
+		return AeisonLauncher.class.getResourceAsStream(filePathIn);
+	}
+
+	public final static void linesFunctionOfInternalFile(final String filePathIn, final IFunction<String> functionIn)
+			throws Exception
+	{
+		FileUtils.linesFunctionOfInternalFile(FileUtils.internalFile(filePathIn), functionIn);
+	}
+
+	public final static void linesFunctionOfInternalFile(final InputStream inputStreamIn,
+			final IFunction<String> functionIn) throws Exception
+	{
+		final var	reader	= new BufferedReader(new InputStreamReader(inputStreamIn));
+
+		String		line;
+		while ((line = reader.readLine()) != null)
+		{
+			functionIn.execute(line);
+		}
+
+		if (reader != null)
+		{
+			reader.close();
+		}
+	}
+
+	public final static List<String> linesOfInternalFile(final String filePathIn) throws Exception
+	{
+		return FileUtils.linesOfInternalFile(FileUtils.internalFile(filePathIn));
+	}
+
+	public final static List<String> linesOfInternalFile(final InputStream inputStreamIn) throws Exception
+	{
+		final var lines = new ArrayList<String>();
+
+		FileUtils.linesFunctionOfInternalFile(inputStreamIn, line -> lines.add(line));
+
+		return lines;
+	}
 
 	final static void createSymbolicLink(final String fromIn, final String toIn) throws Exception
 	{
