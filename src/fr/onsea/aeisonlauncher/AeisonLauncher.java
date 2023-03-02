@@ -36,7 +36,7 @@ import fr.onsea.launcher.Launcher;
 public class AeisonLauncher
 {
 	private final static int	MAJOR	= 1;
-	private final static int	MINOR	= 1;
+	private final static int	MINOR	= 2;
 	private final static String	VERSION	= AeisonLauncher.MAJOR + "." + AeisonLauncher.MINOR;
 
 	public final static void main(final String[] argsIn)
