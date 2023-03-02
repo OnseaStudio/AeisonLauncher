@@ -164,7 +164,6 @@ public class FileUtils
 		}
 
 		System.out.println(sourceFileIn.getAbsolutePath() + " into " + destFileIn.getAbsolutePath());
-		System.exit(0);
 
 		final var	fileInputStream		= new FileInputStream(sourceFileIn);
 		final var	fileOutputStream	= new FileOutputStream(destFileIn);
