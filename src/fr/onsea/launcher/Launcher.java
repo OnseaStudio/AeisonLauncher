@@ -371,6 +371,7 @@ public class Launcher implements ILauncher
 			if (validResourcesBackupPath)
 			{
 				final var resourcesOutputFile = new File(this.SETTINGS.outputFolder().value());
+				FileUtils.mkdirs(resourcesOutputFile.getParent());
 				if (resourcesOutputFile.exists())
 				{
 					final var	date						= new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss")
@@ -742,8 +743,8 @@ public class Launcher implements ILauncher
 		final var			workAbsolutePath	= new File(workPathIn).getAbsolutePath();
 		final List<String>	launchCommand		= new ArrayList<>();
 
-		//
-		Collections.addAll(launchCommand, "cmd", "/k", "start", "TITLE !", "/wait", "/b", "/i", javaExePathIn, "-jar",
+		// "/wait", "/b", "/i",
+		Collections.addAll(launchCommand, "cmd", "/k", "start", "TITLE !", javaExePathIn, "-jar",
 				launchFileIn.getAbsolutePath());
 
 		launchCommand.addAll(argsIn);
