@@ -424,12 +424,6 @@ public class Launcher implements ILauncher
 			this.FILES_MANAGER.writeFilesList(this.SETTINGS.relativeSourcesFolder().value(), sourceInputsPath);
 		}
 
-		final var projectName = this.SETTINGS.strings().of("PROJECT_NAME");
-		if (projectName != null && projectName.value() != null && projectName.value().contentEquals("Aeison"))
-		{
-			System.exit(0);
-		}
-
 		// Define all sources inputs with * character on linux, with source inputs file on windows
 
 		var sourceInputs = this.SETTINGS.relativeSourcesFolder() + "\\*.java";
