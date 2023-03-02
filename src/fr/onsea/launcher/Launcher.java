@@ -421,7 +421,7 @@ public class Launcher implements ILauncher
 		{
 			System.out.println("Writing of all .java sources files into \"" + sourceInputsPath + "\"");
 
-			this.FILES_MANAGER.writeFilesList(this.SETTINGS.sourcesFolder().value(), sourceInputsPath);
+			this.FILES_MANAGER.writeFilesList(this.SETTINGS.relativeSourcesFolder().value(), sourceInputsPath);
 		}
 
 		final var projectName = this.SETTINGS.strings().of("PROJECT_NAME");
