@@ -136,7 +136,7 @@ public class Launcher implements ILauncher
 			}
 
 			System.out.println("Copy : " + fromFile.getAbsolutePath() + " into " + toFile.getAbsolutePath());
-			filesManager.copy(from, to);
+			filesManager.copy(fromFile, toFile);
 
 			System.out.println("New errors, outputs and inputs files creation");
 
