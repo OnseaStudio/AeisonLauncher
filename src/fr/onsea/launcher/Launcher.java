@@ -115,10 +115,10 @@ public class Launcher implements ILauncher
 		if (pass)
 		{
 			final var	javaexepath			= passArguments.get(0);
-			final var	fromFolder			= passArguments.get(1);
+			final var	from				= passArguments.get(1);
 			final var	to					= passArguments.get(2);
 			final var	settingsFilePath	= passArguments.get(3);
-			System.out.println("Pass settings : " + javaexepath + " " + to + " " + fromFolder + " " + settingsFilePath);
+			System.out.println("Pass settings : " + javaexepath + " " + to + " " + from + " " + settingsFilePath);
 
 			// LOAD ALL SETTINGS
 
@@ -128,15 +128,14 @@ public class Launcher implements ILauncher
 
 			filesManager.addFileDeletionAllowedWithConfirmation(settings.localPath().value());
 
-			final var toFile = new File(to);
-			if (toFile.exists())
+			final var	fromFile	= new File(from);
+			final var	toFile		= new File(to + "\\" + fromFile.getName());
+			if (toFile.exists() && toFile.isFile())
 			{
 				filesManager.delete(toFile.getAbsolutePath());
 			}
 
-			final var from = fromFolder + "\\" + toFile.getName();
-
-			System.out.println("Copy : " + from + " into " + to);
+			System.out.println("Copy : " + fromFile.getAbsolutePath() + " into " + toFile.getAbsolutePath());
 			filesManager.copy(from, to);
 
 			System.out.println("New errors, outputs and inputs files creation");
