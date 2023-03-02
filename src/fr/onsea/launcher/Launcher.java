@@ -538,7 +538,7 @@ public class Launcher implements ILauncher
 
 		this.FILES_MANAGER.write(metaInf, metaInfContent.toString());
 
-		System.out.println("Assembly all with MANIFEST.MF into .jar");
+		System.out.println("Assembly all with MANIFEST.MF into \"" + this.SETTINGS.jarOutputPath().value() + "\" .jar");
 		this.FILES_MANAGER.makeJar(new File(this.SETTINGS.groupingFolder().value()),
 				this.SETTINGS.jarOutputPath().value());
 
