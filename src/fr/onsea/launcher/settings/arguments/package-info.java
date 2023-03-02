@@ -28,8 +28,4 @@
  * @author Seynax
  *
  */
-module aeisonlauncher
-{
-	requires static lombok;
-	requires org.eclipse.jgit;
-}
+package fr.onsea.launcher.settings.arguments;

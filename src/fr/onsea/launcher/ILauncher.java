@@ -24,12 +24,94 @@
 *
 *	@author Seynax
 */
+package fr.onsea.launcher;
+
+import java.io.IOException;
+import java.net.SocketException;
+
 /**
  * @author Seynax
  *
  */
-module aeisonlauncher
+public interface ILauncher
 {
-	requires static lombok;
-	requires org.eclipse.jgit;
+	default ILauncher initialization() throws Exception
+	{
+		return this;
+	}
+
+	// Updating part
+
+	/*
+	 *  If return false, updateChecking isn't executed
+	 */
+	default boolean canCheckUpdate() throws SocketException
+	{
+		return true;
+	}
+
+	boolean updateAvailable() throws Exception; // If return false preUpdating, updating and postUpdating isn't executing
+
+	/**
+	 * If return false, updating process isn't executed even if update is available
+	 */
+	default boolean canUpdate()
+	{
+		return true;
+	}
+
+	default ILauncher preUpdading()
+	{
+		return this;
+	}
+
+	ILauncher updating();
+
+	default ILauncher postUpdading()
+	{
+		return this;
+	}
+
+	// Make final jar and resources operations part
+
+	default boolean canAssemble(final boolean updateAvailableIn, final boolean updateDownloadedIn)
+	{
+		return updateAvailableIn && updateDownloadedIn;
+	} // If return false, assembly isn't executed even if update is available
+
+	default ILauncher preAssemble()
+	{
+		return this;
+	}
+
+	ILauncher assemble() throws IOException, Exception;
+
+	default ILauncher postAssemble()
+	{
+		return this;
+	}
+
+	// Launching
+
+	default boolean canLaunch()
+	{
+		return true;
+	} // If return false, assembly isn't executed even if update is available
+
+	default ILauncher preLaunch()
+	{
+		return this;
+	}
+
+	ILauncher launch() throws IOException, Exception;
+
+	default ILauncher postLaunch()
+	{
+		return this;
+	}
+
+	default ILauncher cleanup()
+	{
+		return this;
+	}
 }

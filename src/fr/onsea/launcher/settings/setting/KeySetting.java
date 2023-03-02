@@ -24,12 +24,22 @@
 *
 *	@author Seynax
 */
+package fr.onsea.launcher.settings.setting;
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+
 /**
  * @author Seynax
  *
  */
-module aeisonlauncher
+@Getter
+@RequiredArgsConstructor
+@EqualsAndHashCode
+@ToString
+public class KeySetting implements ISetting
 {
-	requires static lombok;
-	requires org.eclipse.jgit;
+	protected final String key;
 }

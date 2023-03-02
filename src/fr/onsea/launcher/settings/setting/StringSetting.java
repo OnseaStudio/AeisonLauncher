@@ -24,12 +24,60 @@
 *
 *	@author Seynax
 */
+package fr.onsea.launcher.settings.setting;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+
 /**
  * @author Seynax
  *
  */
-module aeisonlauncher
+
+@Getter(AccessLevel.PUBLIC)
+public class StringSetting extends Setting<String> implements ISetting
 {
-	requires static lombok;
-	requires org.eclipse.jgit;
+	protected String value;
+
+	/**
+	 * @param keyIn
+	 * @param valueIn
+	 */
+	public StringSetting(final String keyIn, final String valueIn)
+	{
+		super(keyIn);
+		this.value(valueIn);
+	}
+
+	public String quotedValue()
+	{
+		return "\"" + this.value + "\"";
+	}
+
+	@Override
+	public StringSetting value(final String valueIn)
+	{
+		if (valueIn != null)
+		{
+			var finalValue = valueIn;
+			if (finalValue.startsWith("\""))
+			{
+				finalValue = finalValue.substring(1);
+			}
+			if (finalValue.endsWith("\""))
+			{
+				finalValue = finalValue.substring(0, finalValue.length() - 1);
+			}
+
+			this.value = finalValue;
+		}
+
+		return this;
+	}
+
+	@Override
+	public String toString()
+	{
+		return this.value;
+	}
 }

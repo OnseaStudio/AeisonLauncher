@@ -24,54 +24,44 @@
 *
 *	@author Seynax
 */
-package fr.onsea.aeisonlauncher.utils;
+package fr.onsea.launcher.utils;
+
+import java.net.Inet4Address;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 
 /**
  * @author Seynax
  *
  */
-public class Pair<S1, S2>
+public class ConnectivityUtils
 {
-	private S1	s1;
-	private S2	s2;
-
-	public Pair()
+	public final static boolean isConnected() throws SocketException
 	{
+		final var interfaces = NetworkInterface.getNetworkInterfaces();
+		System.out.println(interfaces);
+		while (interfaces.hasMoreElements())
+		{
+			final var interf = interfaces.nextElement();
+			System.out.println("	" + interf);
+			if (interf.isUp() && !interf.isLoopback())
+			{
+				final var adrs = interf.getInterfaceAddresses();
+				System.out.println("		up and loop back : " + adrs);
+				for (final InterfaceAddress adr : adrs)
+				{
+					System.out.println("			Addr : " + adr);
+					final var inadr = adr.getAddress();
+					if (inadr instanceof Inet4Address)
+					{
+						System.out.println("				in : " + inadr);
+						return true;
+					}
+				}
+			}
+		}
 
-	}
-
-	public Pair(final S1 s1In)
-	{
-		this.s1 = s1In;
-	}
-
-	public Pair(final S1 s1In, final S2 s2In)
-	{
-		this.s1	= s1In;
-		this.s2	= s2In;
-	}
-
-	public S1 s1()
-	{
-		return this.s1;
-	}
-
-	public Pair<S1, S2> s1(final S1 s1In)
-	{
-		this.s1 = s1In;
-
-		return this;
-	}
-
-	public S2 s2()
-	{
-		return this.s2;
-	}
-
-	public Pair<S1, S2> s2(final S2 s2In)
-	{
-		this.s2 = s2In;
-
-		return this;
+		return false;
 	}
 }

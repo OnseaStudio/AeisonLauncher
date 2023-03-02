@@ -24,8 +24,23 @@
 *
 *	@author Seynax
 */
+package fr.onsea.launcher.settings.setting;
+
 /**
  * @author Seynax
  *
  */
-package fr.onsea.aeisonlauncher.settings;
+public interface ISetting
+{
+	String key();
+
+	default boolean is(final ISetting settingIn)
+	{
+		return this.key().contentEquals(settingIn.key());
+	}
+
+	default boolean is(final String keyIn)
+	{
+		return this.key().contentEquals(keyIn);
+	}
+}

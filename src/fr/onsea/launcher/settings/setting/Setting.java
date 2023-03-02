@@ -24,13 +24,44 @@
 *
 *	@author Seynax
 */
-package fr.onsea.aeisonlauncher.utils;
+package fr.onsea.launcher.settings.setting;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author Seynax
  *
  */
-public interface IFunction<T>
+
+@Getter(AccessLevel.PUBLIC)
+@Setter(AccessLevel.PUBLIC)
+public class Setting<T> extends KeySetting implements ISetting
 {
-	void execute(T parameterIn);
+	protected T value;
+
+	/**
+	 * @param keyIn
+	 */
+	protected Setting(final String keyIn)
+	{
+		super(keyIn);
+	}
+
+	/**
+	 * @param keyIn
+	 * @param valueIn
+	 */
+	public Setting(final String keyIn, final T valueIn)
+	{
+		super(keyIn);
+		this.value = valueIn;
+	}
+
+	@Override
+	public String toString()
+	{
+		return this.value.toString();
+	}
 }

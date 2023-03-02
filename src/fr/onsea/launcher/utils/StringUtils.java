@@ -1,5 +1,5 @@
 /**
-*	Copyright 2021 Onsiea All rights reserved.
+*	Copyright 2021-2023 Onsiea All rights reserved.
 *
 *	This file is part of Onsiea Engine. (https://github.com/Onsiea/OnsieaEngine)
 *
@@ -24,7 +24,11 @@
 *
 *	@author Seynax
 */
-package fr.onsea.aeisonlauncher.utils;
+package fr.onsea.launcher.utils;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Seynax
@@ -32,6 +36,58 @@ package fr.onsea.aeisonlauncher.utils;
  */
 public class StringUtils
 {
+	/**
+	 * Split contentIn with separateCharactersIn, if not null and length > 0 add all splitted into splittedsIn and return true, else return false
+	 * @param contentIn
+	 * @param separateCharactersIn
+	 * @param splittedsIn
+	 * @return
+	 */
+	public final static boolean split(final String contentIn, final String separateCharactersIn,
+			final List<String> splittedsIn)
+	{
+		final var splitted = contentIn.split(separateCharactersIn);
+
+		if (splitted != null && splitted.length > 0)
+		{
+			Collections.addAll(splittedsIn, splitted);
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Split previous splitteds elements with the next separate charactersIn
+	 * @param contentIn
+	 * @param separateCharactersIn
+	 * @return
+	 */
+	public final static List<String> splits(final String contentIn, final String... separateCharactersIn)
+	{
+		final List<String> splitteds0 = new ArrayList<>();
+		splitteds0.add(contentIn);
+		final List<String> splitteds1 = new ArrayList<>();
+
+		for (final var separateCharacter : separateCharactersIn)
+		{
+			for (final var lastSplit : splitteds0)
+			{
+				if (!StringUtils.split(lastSplit, separateCharacter, splitteds1))
+				{
+					splitteds1.add(lastSplit);
+				}
+			}
+
+			splitteds0.clear();
+			splitteds0.addAll(splitteds1);
+			splitteds1.clear();
+		}
+
+		return splitteds0;
+	}
+
 	/**
 	 * Split contentIn String with first index of separateCharacterIn
 	 * @param contentIn

@@ -25,7 +25,7 @@
 *
 *	@author Seynax
 */
-package fr.onsea.aeisonlauncher.git;
+package fr.onsea.launcher.git;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 
-import fr.onsea.aeisonlauncher.utils.Pair;
+import fr.onsea.launcher.utils.Pair;
 import lombok.Getter;
 
 /**

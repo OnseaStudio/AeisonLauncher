@@ -1,5 +1,5 @@
 /**
-*	Copyright 2021 Onsiea All rights reserved.
+*	Copyright 2021-2023 Onsiea All rights reserved.
 *
 *	This file is part of Onsiea Engine. (https://github.com/Onsiea/OnsieaEngine)
 *
@@ -24,12 +24,13 @@
 *
 *	@author Seynax
 */
+package fr.onsea.launcher.utils;
+
 /**
  * @author Seynax
  *
  */
-module aeisonlauncher
+public interface IFunction<T>
 {
-	requires static lombok;
-	requires org.eclipse.jgit;
+	void execute(T parameterIn);
 }

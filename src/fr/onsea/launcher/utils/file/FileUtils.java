@@ -24,7 +24,7 @@
 *
 *	@author Seynax
 */
-package fr.onsea.aeisonlauncher.utils;
+package fr.onsea.launcher.utils.file;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -46,6 +46,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 
+import fr.onsea.launcher.utils.IFunction;
+
 /**
  * @Organization Onsea
  * @author Seynax
@@ -55,7 +57,7 @@ public class FileUtils
 {
 	private final static String ZIP_FILE_PATH_SEPARATOR = "/";
 
-	public final static void createSymbolicLink(final String fromIn, final String toIn) throws Exception
+	final static void createSymbolicLink(final String fromIn, final String toIn) throws Exception
 	{
 		final var	regularFile	= Paths.get(fromIn);
 		final var	link		= Paths.get(toIn);
@@ -67,12 +69,12 @@ public class FileUtils
 		Files.createSymbolicLink(link, regularFile);
 	}
 
-	public final static File createNewFile(final String filePathIn) throws Exception
+	final static File createNewFile(final String filePathIn) throws Exception
 	{
 		return FileUtils.createNewFile(new File(filePathIn));
 	}
 
-	public final static File createNewFile(final File fileIn) throws Exception
+	final static File createNewFile(final File fileIn) throws Exception
 	{
 		if (!fileIn.getParentFile().exists())
 		{
@@ -85,7 +87,6 @@ public class FileUtils
 					+ fileIn.getParentFile().getAbsolutePath() + "\" failed !");
 		}
 
-		System.out.println(fileIn.getAbsolutePath());
 		if (!fileIn.createNewFile())
 		{
 			throw new Exception("[ERROR] Creation of \"" + fileIn.getAbsolutePath() + "\" into \""
@@ -95,12 +96,33 @@ public class FileUtils
 		return fileIn;
 	}
 
-	public final static void copy(final String fromIn, final String toIn) throws Exception
+	final static void writeFilesList(final String rootIn, final String destinationFileIn) throws Exception
+	{
+		FileUtils.writeFilesList(new File(rootIn), new File(destinationFileIn));
+	}
+
+	final static void writeFilesList(final File rootIn, final File destinationFileIn) throws Exception
+	{
+		final var	file	= FileUtils.createNewFile(destinationFileIn);
+
+		final var	writer	= new BufferedWriter(new FileWriter(file));
+
+		FileUtils.recurse(rootIn, fileIn -> {
+			if (fileIn.getAbsolutePath().endsWith(".java"))
+			{
+				FileUtils.appendLn(writer, fileIn.getAbsolutePath());
+			}
+		});
+
+		writer.close();
+	}
+
+	final static void copy(final String fromIn, final String toIn) throws Exception
 	{
 		FileUtils.copy(new File(fromIn), new File(toIn));
 	}
 
-	public final static void copy(final File fromIn, final File toIn) throws Exception
+	final static void copy(final File fromIn, final File toIn) throws Exception
 	{
 		if (!fromIn.exists())
 		{
@@ -124,24 +146,21 @@ public class FileUtils
 		}
 	}
 
-	public static void copyFile(final File sourceFileIn, final File destFileIn) throws Exception
+	static void copyFile(final File sourceFileIn, final File destFileIn) throws Exception
 	{
 		if (!destFileIn.getParentFile().exists())
 		{
 			destFileIn.getParentFile().mkdirs();
 		}
-		if (destFileIn.exists())
-		{
-			if (!destFileIn.isFile())
-			{
-				throw new Exception(
-						"[ERROR] Destination file exists and is folder + \"" + destFileIn.getAbsolutePath() + "\"");
-			}
-		}
-		else if (!destFileIn.createNewFile())
+		if (destFileIn.exists() && !destFileIn.isFile())
 		{
 			throw new Exception(
-					"[ERROR] Creation of destination file failed + \"" + destFileIn.getAbsolutePath() + "\"");
+					"[ERROR] Destination file exists and is directory + \"" + destFileIn.getAbsolutePath() + "\"");
+		}
+		if (sourceFileIn.exists() && !sourceFileIn.isFile())
+		{
+			throw new Exception(
+					"[ERROR] Source file exists and is directory + \"" + destFileIn.getAbsolutePath() + "\"");
 		}
 
 		final var	fileInputStream		= new FileInputStream(sourceFileIn);
@@ -157,7 +176,7 @@ public class FileUtils
 		fileOutputStream.close();
 	}
 
-	public static void write(final File fileIn, final String contentIn)
+	static void write(final File fileIn, final String contentIn)
 	{
 		BufferedWriter writer = null;
 
@@ -187,7 +206,7 @@ public class FileUtils
 		}
 	}
 
-	public static void writeAllWithNewLineSeparator(final File fileIn, final String... contentsIn)
+	static void writeAllWithNewLineSeparator(final File fileIn, final String... contentsIn)
 	{
 		BufferedWriter writer = null;
 
@@ -288,7 +307,7 @@ public class FileUtils
 		}
 	}
 
-	public final static void appendLn(final BufferedWriter writerIn, final String contentIn)
+	final static void appendLn(final BufferedWriter writerIn, final String contentIn)
 	{
 		try
 		{
@@ -301,7 +320,7 @@ public class FileUtils
 		}
 	}
 
-	public final static void newFolders(final String... folderPathsIn) throws IOException
+	final static void newFolders(final String... folderPathsIn) throws IOException
 	{
 		for (final var folderPath : folderPathsIn)
 		{
@@ -328,7 +347,7 @@ public class FileUtils
 		}
 	}
 
-	public final static void makeJar(final File rootFolderIn, final String destinationPathIn)
+	final static void makeJar(final File rootFolderIn, final String destinationPathIn)
 	{
 		JarOutputStream jar = null;
 		try
@@ -356,7 +375,7 @@ public class FileUtils
 		}
 	}
 
-	public final static void addIntoJar(final File rootFolderIn, final File fileIn, final JarOutputStream jarFileIn)
+	final static void addIntoJar(final File rootFolderIn, final File fileIn, final JarOutputStream jarFileIn)
 			throws IOException
 	{
 		if (!fileIn.exists())
@@ -426,9 +445,9 @@ public class FileUtils
 	 *
 	 * @param fileIn
 	 * @param valueIn
-	 * @param excludedIn all excluded files separate by ;
+	 * @param excludedFilesPathIn all excluded files separate by ;
 	 */
-	public static void extractJarExcluded(final File fileIn, final String destinationPathIn, final String excludedIn)
+	static void extractJarExcluded(final File fileIn, final String destinationPathIn, final String excludedFilesPathIn)
 	{
 		var dir = destinationPathIn + "\\";
 		if (dir.endsWith(".jar"))
@@ -447,7 +466,24 @@ public class FileUtils
 				final var	name		= splitted != null && splitted.length > 0 ? splitted[splitted.length - 1]
 						: jarEntry.getName();
 
-				if (excludedIn.contains(name))
+				final var	splitted0	= excludedFilesPathIn.split(";");
+				if (splitted0 != null && splitted.length > 0)
+				{
+					var isExcluded = false;
+					for (final var split : splitted0)
+					{
+						if (name.contains(split))
+						{
+							isExcluded = true;
+							continue;
+						}
+					}
+					if (isExcluded)
+					{
+						continue;
+					}
+				}
+				if (name.contains(excludedFilesPathIn))
 				{
 					continue;
 				}
@@ -503,7 +539,7 @@ public class FileUtils
 		}
 	}
 
-	public final static void extractJar(final File fileIn, final String destinationPathIn)
+	final static void extractJar(final File fileIn, final String destinationPathIn)
 	{
 		var dir = destinationPathIn + "\\";
 		if (dir.endsWith(".jar"))
@@ -569,7 +605,7 @@ public class FileUtils
 		}
 	}
 
-	public final static void deletes(final String... folderPathsIn) throws IOException
+	final static void deletes(final String... folderPathsIn) throws IOException
 	{
 		for (final var folderPath : folderPathsIn)
 		{
@@ -582,12 +618,12 @@ public class FileUtils
 		}
 	}
 
-	public final static void deleteDirectory(final String filepathIn) throws IOException
+	final static void deleteDirectory(final String filepathIn) throws IOException
 	{
 		FileUtils.deleteDirectory(Paths.get(filepathIn));
 	}
 
-	public final static void deleteDirectory(final Path filepathIn) throws IOException
+	final static void deleteDirectory(final Path filepathIn) throws IOException
 	{
 		Files.walk(filepathIn).sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
 	}

@@ -24,12 +24,54 @@
 *
 *	@author Seynax
 */
+package fr.onsea.launcher.utils;
+
 /**
  * @author Seynax
  *
  */
-module aeisonlauncher
+public class Pair<S1, S2>
 {
-	requires static lombok;
-	requires org.eclipse.jgit;
+	private S1	s1;
+	private S2	s2;
+
+	public Pair()
+	{
+
+	}
+
+	public Pair(final S1 s1In)
+	{
+		this.s1 = s1In;
+	}
+
+	public Pair(final S1 s1In, final S2 s2In)
+	{
+		this.s1	= s1In;
+		this.s2	= s2In;
+	}
+
+	public S1 s1()
+	{
+		return this.s1;
+	}
+
+	public Pair<S1, S2> s1(final S1 s1In)
+	{
+		this.s1 = s1In;
+
+		return this;
+	}
+
+	public S2 s2()
+	{
+		return this.s2;
+	}
+
+	public Pair<S1, S2> s2(final S2 s2In)
+	{
+		this.s2 = s2In;
+
+		return this;
+	}
 }

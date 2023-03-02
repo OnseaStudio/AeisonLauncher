@@ -24,26 +24,37 @@
 *
 *	@author Seynax
 */
-package fr.onsea.aeisonlauncher.utils;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+package fr.onsea.launcher.utils;
 
 /**
  * @Organization Onsea
  * @author Seynax
  *
  */
-public class StreamUtils
+public class ProcessRun
 {
-	public static void printLines(final InputStream ins) throws Exception
+	public static void run(final ProcessBuilder processBuilderIn) throws Exception
 	{
-		String		line	= null;
-		final var	in		= new BufferedReader(new InputStreamReader(ins));
-		while ((line = in.readLine()) != null)
+		ProcessRun.run(true, processBuilderIn);
+	}
+
+	public static void runWithoutOutput(final ProcessBuilder processBuilderIn) throws Exception
+	{
+		ProcessRun.run(false, processBuilderIn);
+	}
+
+	public static void run(final boolean canPrintIn, final ProcessBuilder processBuilderIn) throws Exception
+	{
+		final var process = processBuilderIn.start();
+		if (canPrintIn)
 		{
-			System.out.println(line);
+			StreamUtils.printLines(process.getInputStream());
+			StreamUtils.printLines(process.getInputStream());
+		}
+		process.waitFor();
+		if (canPrintIn && process.exitValue() < 0)
+		{
+			System.out.println(" exitValue() : " + process.exitValue());
 		}
 	}
 }

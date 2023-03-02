@@ -24,7 +24,7 @@
 *
 *	@author Seynax
 */
-package fr.onsea.aeisonlauncher.utils;
+package fr.onsea.launcher.utils.file;
 
 import java.io.File;
 
