@@ -1,0 +1,1 @@
+"C:\Program Files\Java\jdk-19\bin\java.exe" -jar AeisonLauncher.jar --settings-filepath aeisonlauncher
