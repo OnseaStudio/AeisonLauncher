@@ -542,6 +542,12 @@ public class Launcher implements ILauncher
 		this.FILES_MANAGER.makeJar(new File(this.SETTINGS.groupingFolder().value()),
 				this.SETTINGS.jarOutputPath().value());
 
+		final var projectName = this.SETTINGS.strings().of("PROJECT_NAME");
+		if (projectName != null && projectName.value() != null && projectName.value().contains("Aeison"))
+		{
+			System.exit(0);
+		}
+
 		// Delete temp directory
 
 		System.out.println("deleting temp directory");
