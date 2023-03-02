@@ -138,16 +138,11 @@ public class Launcher implements ILauncher
 			System.out.println("Copy : " + fromFile.getAbsolutePath() + " into " + toFile.getAbsolutePath());
 			filesManager.copy(fromFile, toFile);
 
-			System.out.println("New errors, outputs and inputs files creation");
-
-			final var	date		= new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss-SSS").format(new Date());
-			final var	errorsFile	= filesManager.createNewFile(settings.tempFolder() + "\\errors_" + date + ".txt");
-			final var	outputsFile	= filesManager.createNewFile(settings.tempFolder() + "\\outputs_." + date + ".txt");
-			final var	inputsFile	= filesManager.createNewFile(settings.tempFolder() + "\\inputs_" + date + ".txt");
+			Launcher.newOutputsFiles(filesManager, settings);
 
 			System.out.println("Launch !");
-			Launcher.launch("", javaexepath, toFile, othersArguments, toFile.getParent(), errorsFile, outputsFile,
-					inputsFile);
+			Launcher.launch("", javaexepath, toFile, othersArguments, toFile.getParent(), Launcher.errorsFile,
+					Launcher.outputsFile, Launcher.inputsFile);
 		}
 
 		// COMPILE ARGUMENTS
@@ -174,6 +169,10 @@ public class Launcher implements ILauncher
 
 		Launcher.start(new Launcher(settings, filesManager), argsIn);
 	}
+
+	private static File				errorsFile;
+	private static File				outputsFile;
+	private static File				inputsFile;
 
 	private final GenericSettings	SETTINGS;
 	private GitManager				gitManager;
@@ -502,17 +501,14 @@ public class Launcher implements ILauncher
 
 		// Create errors, outputs and inputs logs files
 
-		System.out.println("New errors, outputs and inputs files creation");
-		final var	errorsFile	= this.FILES_MANAGER.createNewFile(this.SETTINGS.tempFolder().value() + "\\errors.txt");
-		final var	outputsFile	= this.FILES_MANAGER
-				.createNewFile(this.SETTINGS.tempFolder().value() + "\\outputs.txt");
-		final var	inputsFile	= this.FILES_MANAGER.createNewFile(this.SETTINGS.tempFolder().value() + "\\inputs.txt");
+		Launcher.newOutputsFiles(this.FILES_MANAGER, this.SETTINGS);
 
 		// Run javac command with redirection of outputs into logs files
 		System.out.println("Launching of javac command");
-		ProcessRun.runWithoutOutput(new ProcessBuilder(javacCommand)
-				.directory(new File(this.SETTINGS.localPath().value())).redirectErrorStream(true)
-				.redirectError(errorsFile).redirectOutput(outputsFile).redirectInput(inputsFile));
+		ProcessRun.runWithoutOutput(
+				new ProcessBuilder(javacCommand).directory(new File(this.SETTINGS.localPath().value()))
+						.redirectErrorStream(true).redirectError(Launcher.errorsFile)
+						.redirectOutput(Launcher.outputsFile).redirectInput(Launcher.inputsFile));
 
 		// Copy compiled sources into grouped path
 
@@ -663,14 +659,7 @@ public class Launcher implements ILauncher
 				final var launchFile = new File(jarPath);
 				if (launchFile.exists())
 				{
-					System.out.println("New errors, outputs and inputs files creation");
-					final var	date		= new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss-SSS").format(new Date());
-					final var	errorsFile	= this.FILES_MANAGER
-							.createNewFile(this.SETTINGS.tempFolder() + "\\errors_" + date + ".txt");
-					final var	outputsFile	= this.FILES_MANAGER
-							.createNewFile(this.SETTINGS.tempFolder() + "\\outputs_." + date + ".txt");
-					final var	inputsFile	= this.FILES_MANAGER
-							.createNewFile(this.SETTINGS.tempFolder() + "\\inputs_" + date + ".txt");
+					Launcher.newOutputsFiles(this.FILES_MANAGER, this.SETTINGS);
 
 					System.out.println("Launch \"" + jarPath + "\" from work path \"" + workPath + "\"");
 
@@ -713,7 +702,7 @@ public class Launcher implements ILauncher
 					}
 
 					Launcher.launch("", this.SETTINGS.javaExePath().quotedValue(), launchFile, args, workPath,
-							errorsFile, outputsFile, inputsFile);
+							Launcher.errorsFile, Launcher.outputsFile, Launcher.inputsFile);
 				}
 				else
 				{
@@ -758,5 +747,18 @@ public class Launcher implements ILauncher
 				.redirectError(errorsFileIn).redirectOutput(outputsFileIn).redirectInput(inputsFileIn).start();
 
 		System.exit(0);
+	}
+
+	private static void newOutputsFiles(final FilesManager filesManagerIn, final GenericSettings settingsIn)
+			throws Exception
+	{
+		System.out.println("New errors, outputs and inputs files creation");
+		final var date = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss-SSS").format(new Date());
+		Launcher.errorsFile		= filesManagerIn
+				.createNewFile(settingsIn.tempFolder() + "\\" + settingsIn.projectName() + "_errors_" + date + ".txt");
+		Launcher.outputsFile	= filesManagerIn.createNewFile(
+				settingsIn.tempFolder() + "\\" + settingsIn.projectName() + "_outputs_." + date + ".txt");
+		Launcher.inputsFile		= filesManagerIn
+				.createNewFile(settingsIn.tempFolder() + "\\" + settingsIn.projectName() + "_inputs_" + date + ".txt");
 	}
 }

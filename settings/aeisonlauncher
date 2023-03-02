@@ -1,6 +1,6 @@
 REMOTE_URL							= "https://github.com/OnseaStudio/AeisonLauncher"
 PROJECT_ID							= "aeisonlauncher"
-PROJECT_NAME						= "Aeison"
+PROJECT_NAME						= "AeisonLauncher"
 OPERATION_FOLDER					= "target\generated_sources\<PROJECT_ID>"
 RELATIVE_LOCAL_PATH					= "<OPERATION_FOLDER>\git\<PROJECT_NAME>"
 LIB_PATH							= "<LOCAL_PATH>\librairies"

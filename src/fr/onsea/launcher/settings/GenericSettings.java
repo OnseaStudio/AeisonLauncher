@@ -43,6 +43,8 @@ public class GenericSettings extends Settings
 	private StringSetting			remoteUrl;
 	protected StringSetting			relativeLocalPath;
 	protected StringSetting			localPath;
+	protected StringSetting			projectId;
+	protected StringSetting			projectName;
 
 	private StringSetting			libPath;
 	private StringSetting			relativeSourcesFolder;
@@ -81,11 +83,12 @@ public class GenericSettings extends Settings
 	@Override
 	public Settings reload() throws Exception
 	{
+		this.remoteUrl							= this.strings().load("REMOTE_URL");
 		this.relativeLocalPath					= this.strings().load("RELATIVE_LOCAL_PATH");
 		this.localPath							= this.strings().load("LOCAL_PATH",
 				new File(this.relativeLocalPath.value()).getAbsolutePath());
-		this.remoteUrl							= this.strings().load("REMOTE_URL");
-
+		this.projectId							= this.strings().load("PROJECT_ID", null);
+		this.projectName						= this.strings().load("PROJECT_NAME", null);
 		this.libPath							= this.strings().load("LIB_PATH", this.localPath + "\\librairies");
 		this.relativeSourcesFolder				= this.strings().load("RELATIVE_SOURCES_FOLDER",
 				this.localPath + "\\sources");
