@@ -534,12 +534,12 @@ public class Launcher implements ILauncher
 
 		this.FILES_MANAGER.write(metaInf, metaInfContent.toString());
 
-		System.out.println("Assembly all with MANIFEST.MF into \"" + this.SETTINGS.jarOutputPath().value() + "\" .jar");
+		System.out.println("Assembly all with MANIFEST.MF into " + this.SETTINGS.jarOutputPath().quotedValue());
 		this.FILES_MANAGER.makeJar(new File(this.SETTINGS.groupingFolder().value()),
 				this.SETTINGS.jarOutputPath().value());
 
 		final var projectName = this.SETTINGS.strings().of("PROJECT_NAME");
-		if (projectName != null && projectName.value() != null && projectName.value().contains("Aeison"))
+		if (projectName != null && projectName.value() != null && projectName.value().contentEquals("Aeison"))
 		{
 			System.exit(0);
 		}
