@@ -152,16 +152,19 @@ public class FileUtils
 		{
 			destFileIn.getParentFile().mkdirs();
 		}
-		if (destFileIn.exists() && !destFileIn.isFile())
-		{
-			throw new Exception(
-					"[ERROR] Destination file exists and is directory + \"" + destFileIn.getAbsolutePath() + "\"");
-		}
 		if (sourceFileIn.exists() && !sourceFileIn.isFile())
 		{
 			throw new Exception(
 					"[ERROR] Source file exists and is directory + \"" + destFileIn.getAbsolutePath() + "\"");
 		}
+		if (destFileIn.exists() && !destFileIn.isFile())
+		{
+			throw new Exception(
+					"[ERROR] Destination file exists and is directory + \"" + destFileIn.getAbsolutePath() + "\"");
+		}
+
+		System.out.println(sourceFileIn.getAbsolutePath() + " into " + destFileIn.getAbsolutePath());
+		System.exit(0);
 
 		final var	fileInputStream		= new FileInputStream(sourceFileIn);
 		final var	fileOutputStream	= new FileOutputStream(destFileIn);
