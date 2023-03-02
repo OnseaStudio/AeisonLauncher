@@ -426,7 +426,7 @@ public class Launcher implements ILauncher
 
 		// Define all sources inputs with * character on linux, with source inputs file on windows
 
-		var sourceInputs = this.SETTINGS.relativeSourcesFolder() + "\\*.java";
+		var sourceInputs = this.SETTINGS.sourcesFolder() + "\\*.java";
 
 		if (System.getProperty("os.name").contains("Windows"))
 		{
